@@ -8,10 +8,13 @@
     using System.Text.RegularExpressions;
     using System.Web;
 
+    using QAScraper.Data;
     using QAScraper.Models;
 
     public class FileHelper
     {
+        private const string PATH = "~/Sites";
+
         public static Dictionary<string, string> Sites = new Dictionary<string, string>
             {
                 { "Aquavit", "http://www.aquavit.org/restaurant/newyork/index.asp" },
@@ -23,7 +26,7 @@
         {
             try
             {
-                var path = HttpContext.Current.Server.MapPath("~/Sites/");
+                var path = HttpContext.Current.Server.MapPath(PATH);
                 var files = Directory.EnumerateFiles(path);
 
                 var filenames = files.Select(Path.GetFileName).ToList();
@@ -38,9 +41,15 @@
 
         public static void UpdateSites()
         {
-            foreach (var site in Sites)
+            var sitesContext = new SitesDB();
+
+            var sites = sitesContext.Sites.ToList();
+
+            //DeleteAll(new DirectoryInfo(PATH));
+
+            foreach (var site in sites)
             {
-                var request = (HttpWebRequest)WebRequest.Create(site.Value);
+                var request = (HttpWebRequest)WebRequest.Create(site.Url);
 
                 request.Accept= "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
                 request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36";
@@ -53,10 +62,11 @@
                         {
                             using (var reader = new StreamReader(stream))
                             {
-                                var path = HttpContext.Current.Server.MapPath(string.Format("~/Sites/{0}.html",site.Key));
+                                var path =
+                                    HttpContext.Current.Server.MapPath(string.Format("{0}/{1}.html", PATH, site.Name));
                                 var page = reader.ReadToEnd();
 
-                                var baseUri = new Uri(site.Value); 
+                                var baseUri = new Uri(site.Url); 
 
                                 var absolutePage = Regex.Replace(
                                     page,
@@ -85,6 +95,12 @@
             }
         }
 
-
+        private static void DeleteAll(DirectoryInfo directory)
+        {
+            foreach (var file in directory.GetFiles())
+            {
+                file.Delete();
+            }
+        }
     }
 }
