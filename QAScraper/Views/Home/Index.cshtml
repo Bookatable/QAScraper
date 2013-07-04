@@ -1,0 +1,22 @@
+﻿@model IEnumerable<string>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Sites</h2>
+<button id="update-button">Update</button>
+<table>
+    <tr>
+        <th>Site</th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="~/Sites/@item">@item</a>
+        </td>
+    </tr>
+}
+
+</table>
