@@ -23,10 +23,5 @@ namespace QAScraper
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
-
-        protected void Application_PreSendRequestHeaders(Object sender, EventArgs e)
-        {
-            Request.Headers.Add("Access-Control-Allow-Origin", "*");
-        } 
     }
 }

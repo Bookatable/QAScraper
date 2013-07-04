@@ -63,9 +63,17 @@
                                     @"(?:(?:href)|(?:src))=""(?:/|(?:\.\./)+)",
                                     delegate(Match match)
                                         {
-                                            var matchString = match.ToString().Replace("href=\"", "").Replace("src=\"", "");
+                                            
+                                            var matchString = match.ToString();
+                                                
+                                                if (matchString.StartsWith("href"))
+                                                {
+                                                    matchString = matchString.Replace("href=\"", "");
+                                                    return string.Format("href=\"{0}", new Uri(baseUri, matchString));
+                                                }
 
-                                            return string.Format("href=\"{0}", new Uri(baseUri, matchString));
+                                            matchString = matchString.Replace("src=\"", "");
+                                            return string.Format("src=\"{0}", new Uri(baseUri, matchString));
                                         });
 
                                 File.WriteAllText(path, absolutePage);
