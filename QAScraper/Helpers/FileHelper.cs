@@ -45,6 +45,7 @@
 
                 request.Accept= "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
                 request.UserAgent = currentRequest.UserAgent;
+                request.Headers.Add("Accept-Language", currentRequest.Headers["Accept-Language"]);
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
