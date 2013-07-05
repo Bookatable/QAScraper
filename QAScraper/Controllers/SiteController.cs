@@ -10,6 +10,8 @@ using QAScraper.Data;
 
 namespace QAScraper.Controllers
 {
+    using QAScraper.Helpers;
+
     public class SiteController : Controller
     {
         private SitesDB db = new SitesDB();
@@ -32,7 +34,7 @@ namespace QAScraper.Controllers
             {
                 return HttpNotFound();
             }
-            return View(site);
+            return Content(FileHelper.GetSite(site));
         }
 
         //

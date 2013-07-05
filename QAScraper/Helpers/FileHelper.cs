@@ -39,6 +39,55 @@
             }
         }
 
+        public static string GetSite(Site site)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(site.Url);
+
+                request.Accept= "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36";
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    if (stream != null)
+                    {
+                        using (var reader = new StreamReader(stream))
+                        {
+                            var page = reader.ReadToEnd();
+
+                            var baseUri = new Uri(site.Url);
+
+                            var absolutePage = Regex.Replace(
+                                page,
+                                @"(?:(?:href)|(?:src))=""(?!https?://)[^""]+",
+                                delegate(Match match)
+                                    {
+
+                                        var matchString = match.ToString();
+
+                                        if (matchString.StartsWith("href"))
+                                        {
+                                            matchString = matchString.Replace("href=\"", "");
+                                            return string.Format("href=\"{0}", new Uri(baseUri, matchString));
+                                        }
+
+                                        matchString = matchString.Replace("src=\"", "");
+                                        return string.Format("src=\"{0}", new Uri(baseUri, matchString));
+                                    });
+
+                            absolutePage = absolutePage.Replace(
+                                "://secure.livebookings.com", "://uat-secure.livebookings.net");
+
+                            return absolutePage;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static void UpdateSites()
         {
             var sitesContext = new SitesDB();
@@ -70,7 +119,7 @@
 
                                 var absolutePage = Regex.Replace(
                                     page,
-                                    @"(?:(?:href)|(?:src))=""(?:/|(?:\.\./)+)",
+                                    @"(?:(?:href)|(?:src))=""(?!https?://)[^""]+",
                                     delegate(Match match)
                                         {
                                             
@@ -85,6 +134,8 @@
                                             matchString = matchString.Replace("src=\"", "");
                                             return string.Format("src=\"{0}", new Uri(baseUri, matchString));
                                         });
+
+                                absolutePage = absolutePage.Replace("://secure.livebookings.com", "://uat-secure.livebookings.net");
 
                                 File.WriteAllText(path, absolutePage);
                             }
