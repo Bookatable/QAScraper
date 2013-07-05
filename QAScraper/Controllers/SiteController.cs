@@ -34,7 +34,7 @@ namespace QAScraper.Controllers
             {
                 return HttpNotFound();
             }
-            return Content(FileHelper.GetSite(site));
+            return Content(FileHelper.GetSite(site, Request));
         }
 
         //

@@ -39,12 +39,12 @@
             }
         }
 
-        public static string GetSite(Site site)
+        public static string GetSite(Site site, HttpRequestBase currentRequest)
         {
             var request = (HttpWebRequest)WebRequest.Create(site.Url);
 
                 request.Accept= "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-                request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36";
+                request.UserAgent = currentRequest.UserAgent;
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
