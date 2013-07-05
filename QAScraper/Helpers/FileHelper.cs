@@ -94,8 +94,6 @@
 
             var sites = sitesContext.Sites.ToList();
 
-            //DeleteAll(new DirectoryInfo(PATH));
-
             foreach (var site in sites)
             {
                 var request = (HttpWebRequest)WebRequest.Create(site.Url);
